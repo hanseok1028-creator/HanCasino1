@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Speed Baccarat Live</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            background-color: #0b0e14;
+            color: #ffffff;
+        }
+
+        /* Felt table gradient background */
+        .casino-felt {
+            background: radial-gradient(circle at 50% 30%, #1a2332 0%, #0d121c 60%, #05070a 100%);
+            position: relative;
+        }
+
+        .casino-felt::before {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 60%;
+            border: 2px solid rgba(212, 175, 55, 0.15);
+            border-radius: 50% / 30%;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.4);
+            border-radius: 4px;
+        }
+
+        /* Curved Circular Chip Selector Overlay */
+        .chip-selector-modal {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: bottom center;
+        }
+
+        .chip-selector-modal.hidden-scale {
+            opacity: 0;
+            transform: scale(0.2) translateY(100px);
+            pointer-events: none;
+        }
+
+        .chip-selector-modal.active-scale {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Glowing Effects */
+        .gold-border-glow {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), inset 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+        
+        .blue-glow {
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+        }
+
+        .red-glow {
+            box-shadow: 0 0 12px rgba(220, 38, 38, 0.6);
+        }
+
+        .green-glow {
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+        }
+
+        /* 3D Chip Styles */
+        .casino-chip {
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .casino-chip::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 2px dashed rgba(255,255,255,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .casino-chip:hover {
+            transform: translateY(-4px) scale(1.08);
+        }
+
+        /* Card Animation Styles */
+        .card-container {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #d4af37;
+        }
+
+        .card-front {
+            transform: rotateY(180deg);
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen casino-felt flex flex-col justify-between overflow-hidden select-none">
+
+    <!-- TOP HEADER BAR -->
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-amber-500/20 px-4 py-2 flex justify-between items-center z-20">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-bold text-slate-200 tracking-wider">SPEED BACCARAT 1</span>
+            </div>
+            <div class="hidden sm:flex text-xs text-slate-400 gap-4">
+                <span>최대: <strong class="text-amber-400">5,000,000</strong></span>
+                <span>최소: <strong class="text-amber-400">1,000</strong></span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button id="btn-sound" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                <i class="fas me-0.5 fa-volume-up text-sm"></i>
+            </button>
+            <button id="btn-rules" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                <i class="fas fa-question text-sm"></i>
+            </button>
+            <button id="btn-history" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                <i class="fas fa-history text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN LIVE TABLE DISPLAY AREA -->
+    <main class="flex-1 relative flex flex-col items-center justify-between p-2 max-w-6xl mx-auto w-full z-10">
+        
+        <!-- TOP: TIMER & CARD DEALING AREA -->
+        <div class="w-full flex flex-col items-center mt-1">
+            
+            <!-- Timer Display with Circular Ring -->
+            <div id="timer-wrapper" class="relative w-20 h-20 mb-2 flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="timer-progress" class="text-amber-400 transition-all duration-1000 ease-linear" stroke-width="3" stroke-dasharray="100, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="absolute flex flex-col items-center justify-center">
+                    <span id="timer-text" class="text-2xl font-black text-amber-300">12</span>
+                    <span id="timer-status" class="text-[9px] font-bold tracking-tighter text-slate-400 uppercase">베팅 가능</span>
+                </div>
+            </div>
+
+            <!-- Card Dealing Hands -->
+            <div class="w-full max-w-xl grid grid-cols-2 gap-6 my-1">
+                <!-- PLAYER HAND -->
+                <div class="bg-slate-900/60 backdrop-blur-md rounded-xl p-3 border border-blue-500/30 flex flex-col items-center">
+                    <div class="flex justify-between w-full mb-2 items-center">
+                        <span class="text-xs font-bold text-blue-400 flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> 플레이어 (PLAYER)
+                        </span>
+                        <span id="player-score" class="text-lg font-black bg-blue-600/30 text-blue-300 px-2.5 py-0.5 rounded-md border border-blue-500/40 opacity-0 transition-opacity">0</span>
+                    </div>
+                    <div id="player-cards" class="flex gap-2 min-h-[90px] items-center justify-center">
+                        <!-- Cards added dynamically -->
+                    </div>
+                </div>
+
+                <!-- BANKER HAND -->
+                <div class="bg-slate-900/60 backdrop-blur-md rounded-xl p-3 border border-red-500/30 flex flex-col items-center">
+                    <div class="flex justify-between w-full mb-2 items-center">
+                        <span id="banker-score" class="text-lg font-black bg-red-600/30 text-red-300 px-2.5 py-0.5 rounded-md border border-red-500/40 opacity-0 transition-opacity">0</span>
+                        <span class="text-xs font-bold text-red-400 flex items-center gap-1">
+                            뱅커 (BANKER) <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        </span>
+                    </div>
+                    <div id="banker-cards" class="flex gap-2 min-h-[90px] items-center justify-center">
+                        <!-- Cards added dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDDLE: ROADMAP SCOREBOARD / BEAD PLATE -->
+        <div class="w-full max-w-4xl bg-slate-950/80 backdrop-blur-md rounded-xl border border-slate-800 p-2 my-1 shadow-2xl">
+            <div class="flex justify-between items-center text-[10px] text-slate-400 mb-1.5 px-2">
+                <div class="flex gap-3 font-semibold">
+                    <span>수량: <strong id="stat-total" class="text-white">42</strong></span>
+                    <span class="text-blue-400">P: <strong id="stat-player" class="text-white">19</strong></span>
+                    <span class="text-red-400">B: <strong id="stat-banker" class="text-white">20</strong></span>
+                    <span class="text-emerald-400">T: <strong id="stat-tie" class="text-white">3</strong></span>
+                </div>
+                <div class="flex gap-3 font-semibold">
+                    <span class="text-blue-300">P.Pair: <strong id="stat-ppair" class="text-white">2</strong></span>
+                    <span class="text-red-300">B.Pair: <strong id="stat-bpair" class="text-white">3</strong></span>
+                </div>
+            </div>
+
+            <!-- Bead Plate Grid -->
+            <div id="bead-plate" class="grid grid-rows-6 grid-flow-col gap-1 overflow-x-auto p-1 bg-slate-900/90 rounded-lg min-h-[100px]">
+                <!-- Dynamic Bead Plate Cells Generated JS -->
+            </div>
+        </div>
+
+        <!-- MIDDLE-BOTTOM: EVOLUTION STYLE BETTING BOARD -->
+        <div class="w-full max-w-3xl relative mt-1">
+            <div class="grid grid-cols-6 gap-1.5 p-2 bg-slate-950/90 rounded-2xl border border-amber-500/20 shadow-2xl relative">
+                
+                <!-- TOP SIDE BETS ROW -->
+                <!-- Perfect Pair -->
+                <div data-bet="perfect_pair" class="bet-spot col-span-3 bg-gradient-to-b from-slate-900 to-slate-800/80 hover:from-slate-800 hover:to-slate-700 border border-slate-700/60 hover:border-amber-400/50 rounded-xl p-2.5 flex flex-col items-center justify-center cursor-pointer transition relative group min-h-[60px]">
+                    <span class="text-[11px] font-bold text-amber-200">퍼펙트 페어</span>
+                    <span class="text-[9px] text-slate-400">25 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Either Pair -->
+                <div data-bet="either_pair" class="bet-spot col-span-3 bg-gradient-to-b from-slate-900 to-slate-800/80 hover:from-slate-800 hover:to-slate-700 border border-slate-700/60 hover:border-amber-400/50 rounded-xl p-2.5 flex flex-col items-center justify-center cursor-pointer transition relative group min-h-[60px]">
+                    <span class="text-[11px] font-bold text-amber-200">이더 페어</span>
+                    <span class="text-[9px] text-slate-400">5 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- MIDDLE SIDE BETS ROW -->
+                <!-- Player Pair -->
+                <div data-bet="player_pair" class="bet-spot col-span-2 bg-blue-950/30 hover:bg-blue-900/40 border border-blue-600/30 hover:border-blue-500 rounded-xl p-2 flex flex-col items-center justify-center cursor-pointer transition relative min-h-[55px]">
+                    <span class="text-[11px] font-bold text-blue-300">플레이어 페어</span>
+                    <span class="text-[9px] text-blue-400/80">11 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Player Bonus -->
+                <div data-bet="player_bonus" class="bet-spot col-span-1 bg-blue-950/20 hover:bg-blue-900/30 border border-blue-600/20 hover:border-blue-500/50 rounded-xl p-2 flex flex-col items-center justify-center cursor-pointer transition relative min-h-[55px]">
+                    <span class="text-[10px] font-bold text-blue-300">P.보너스</span>
+                    <span class="text-[8px] text-blue-400/80">30 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Banker Bonus -->
+                <div data-bet="banker_bonus" class="bet-spot col-span-1 bg-red-950/20 hover:bg-red-900/30 border border-red-600/20 hover:border-red-500/50 rounded-xl p-2 flex flex-col items-center justify-center cursor-pointer transition relative min-h-[55px]">
+                    <span class="text-[10px] font-bold text-red-300">B.보너스</span>
+                    <span class="text-[8px] text-red-400/80">30 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Banker Pair -->
+                <div data-bet="banker_pair" class="bet-spot col-span-2 bg-red-950/30 hover:bg-red-900/40 border border-red-600/30 hover:border-red-500 rounded-xl p-2 flex flex-col items-center justify-center cursor-pointer transition relative min-h-[55px]">
+                    <span class="text-[11px] font-bold text-red-300">뱅커 페어</span>
+                    <span class="text-[9px] text-red-400/80">11 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- BOTTOM MAIN BETS ROW -->
+                <!-- Player Main -->
+                <div data-bet="player" class="bet-spot col-span-2 bg-gradient-to-br from-blue-700/80 to-blue-900/90 hover:from-blue-600 hover:to-blue-800 border-2 border-blue-400/50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition shadow-lg relative min-h-[90px]">
+                    <span class="text-lg font-black text-white tracking-wider">플레이어</span>
+                    <span class="text-xs font-semibold text-blue-200">1 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Tie Main -->
+                <div data-bet="tie" class="bet-spot col-span-2 bg-gradient-to-br from-emerald-700/80 to-emerald-900/90 hover:from-emerald-600 hover:to-emerald-800 border-2 border-emerald-400/50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition shadow-lg relative min-h-[90px]">
+                    <span class="text-lg font-black text-white tracking-wider">무승부</span>
+                    <span class="text-xs font-semibold text-emerald-200">8 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+                <!-- Banker Main -->
+                <div data-bet="banker" class="bet-spot col-span-2 bg-gradient-to-br from-red-700/80 to-red-900/90 hover:from-red-600 hover:to-red-800 border-2 border-red-400/50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition shadow-lg relative min-h-[90px]">
+                    <span class="text-lg font-black text-white tracking-wider">뱅커</span>
+                    <span class="text-xs font-semibold text-red-200">0.95 : 1</span>
+                    <div class="chip-container absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+                </div>
+
+            </div>
+
+            <!-- CIRCULAR CHIP SELECTOR POPUP OVERLAY (EVOLUTION EXACT RECREATION) -->
+            <div id="chip-selector-overlay" class="chip-selector-modal hidden-scale absolute left-1/2 bottom-3 -translate-x-1/2 w-[340px] h-[340px] pointer-events-none z-30 flex items-center justify-center">
+                <!-- Dark Semi-circular Arc Backdrop -->
+                <div class="absolute inset-0 rounded-full bg-slate-950/90 backdrop-blur-xl border-2 border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.9)]"></div>
+                
+                <!-- Inner Arc Line Accent -->
+                <div class="absolute w-[270px] h-[270px] rounded-full border border-dashed border-amber-500/30"></div>
+                
+                <!-- Close / Dim Area Button in Center -->
+                <div class="absolute text-center z-10 flex flex-col items-center pointer-events-auto cursor-pointer" id="close-chip-menu">
+                    <i class="fas fa-times text-slate-400 text-lg hover:text-white transition"></i>
+                    <span class="text-[10px] text-amber-400/80 font-bold tracking-widest uppercase mt-1">칩 선택</span>
+                </div>
+
+                <!-- Circular Placed Chips Container -->
+                <div id="circular-chips-holder" class="absolute inset-0 pointer-events-auto">
+                    <!-- Dynamic Curved Chip Buttons Generated JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- BOTTOM CONTROL BAR -->
+    <footer class="w-full bg-slate-950 border-t border-slate-800 px-4 py-2.5 z-20 flex justify-between items-center relative">
+        
+        <!-- Left: Balance & Bet Display -->
+        <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">보유잔액</span>
+                <span id="user-balance" class="text-lg font-extrabold text-amber-400">₩ 10,000,000</span>
+            </div>
+            <div class="h-8 w-px bg-slate-800"></div>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">총 베팅</span>
+                <span id="total-bet" class="text-lg font-extrabold text-white">₩ 0</span>
+            </div>
+        </div>
+
+        <!-- Center: Active Selected Chip Trigger Button -->
+        <div class="absolute left-1/2 -translate-x-1/2 bottom-2 flex flex-col items-center">
+            <button id="btn-chip-trigger" class="relative group focus:outline-none">
+                <!-- Outer Pulse Ring -->
+                <span class="absolute -inset-1 rounded-full bg-amber-500/30 group-hover:bg-amber-500/50 blur transition animate-pulse"></span>
+                <!-- Main Selected Chip Icon -->
+                <div id="trigger-chip-display" class="casino-chip w-14 h-14 bg-purple-700 text-white text-xs border-2 border-purple-300 relative z-10 shadow-xl">
+                    125K
+                </div>
+            </button>
+        </div>
+
+        <!-- Right: Action Buttons (Undo, Double 2X) -->
+        <div class="flex items-center gap-2">
+            <button id="btn-undo" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fas fa-undo text-amber-400"></i>
+                <span class="hidden sm:inline">실행 취소</span>
+            </button>
+            <button id="btn-double" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fas fa-bolt text-amber-400"></i>
+                <span>2X</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- GAME LOGIC & INTERACTION SCRIPT -->
+    <script>
+        // --- CHIP DEFINITIONS ---
+        const CHIP_VALUES = [
+            { val: 1000, label: '1K', bg: 'bg-slate-600', border: 'border-slate-300', text: 'text-white' },
+            { val: 5000, label: '5K', bg: 'bg-red-600', border: 'border-red-300', text: 'text-white' },
+            { val: 10000, label: '10K', bg: 'bg-blue-600', border: 'border-blue-300', text: 'text-white' },
+            { val: 25000, label: '25K', bg: 'bg-green-600', border: 'border-green-300', text: 'text-white' },
+            { val: 125000, label: '125K', bg: 'bg-purple-600', border: 'border-purple-300', text: 'text-white' },
+            { val: 500000, label: '500K', bg: 'bg-amber-600', border: 'border-amber-300', text: 'text-white' },
+            { val: 1250000, label: '1.25M', bg: 'bg-cyan-600', border: 'border-cyan-300', text: 'text-white' },
+            { val: 5000000, label: '5M', bg: 'bg-yellow-500', border: 'border-yellow-200', text: 'text-slate-950' }
+        ];
+
+        // --- GAME STATE ---
+        let balance = 10000000;
+        let activeChipIndex = 4; // Default: 125K
+        let currentBets = {}; // betKey -> amount
+        let betHistory = []; // Stack for undo
+        let timerSeconds = 12;
+        let timerInterval = null;
+        let isBettingOpen = true;
+        let gameHistory = [];
+
+        // --- DOM ELEMENTS ---
+        const chipSelectorOverlay = document.getElementById('chip-selector-overlay');
+        const circularChipsHolder = document.getElementById('circular-chips-holder');
+        const btnChipTrigger = document.getElementById('btn-chip-trigger');
+        const triggerChipDisplay = document.getElementById('trigger-chip-display');
+        const closeChipMenu = document.getElementById('close-chip-menu');
+        const userBalanceEl = document.getElementById('user-balance');
+        const totalBetEl = document.getElementById('total-bet');
+        const timerText = document.getElementById('timer-text');
+        const timerProgress = document.getElementById('timer-progress');
+        const timerStatus = document.getElementById('timer-status');
+        const btnUndo = document.getElementById('btn-undo');
+        const btnDouble = document.getElementById('btn-double');
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            renderCircularChipSelector();
+            updateTriggerChipUI();
+            updateBalanceUI();
+            initSampleRoadmap();
+            startNewRound();
+
+            // Event Listeners
+            btnChipTrigger.addEventListener('click', toggleChipSelector);
+            closeChipMenu.addEventListener('click', closeChipSelector);
+            btnUndo.addEventListener('click', handleUndo);
+            btnDouble.addEventListener('click', handleDouble);
+
+            // Register Betting Area Clicks
+            document.querySelectorAll('.bet-spot').forEach(spot => {
+                spot.addEventListener('click', () => {
+                    const betKey = spot.getAttribute('data-bet');
+                    placeBet(betKey);
+                });
+            });
+        };
+
+        // --- CIRCULAR CHIP MENU BUILDER ---
+        function renderCircularChipSelector() {
+            circularChipsHolder.innerHTML = '';
+            const totalChips = CHIP_VALUES.length;
+            const radius = 125; // Radial offset distance in pixels
+
+            // Place chips along a semi-circle/fan arc
+            const startAngle = 140; // degrees
+            const endAngle = 400;   // degrees
+            const angleStep = (endAngle - startAngle) / (totalChips - 1);
+
+            CHIP_VALUES.forEach((chip, idx) => {
+                const angleDeg = startAngle + (idx * angleStep);
+                const angleRad = (angleDeg * Math.PI) / 180;
+
+                // Calculate circular position
+                const x = Math.cos(angleRad) * radius;
+                const y = Math.sin(angleRad) * radius;
+
+                const chipBtn = document.createElement('div');
+                chipBtn.className = `casino-chip absolute w-12 h-12 ${chip.bg} ${chip.text} ${chip.border} border-2 text-[10px] font-bold shadow-lg transition-all duration-200`;
+                chipBtn.style.left = `calc(50% + ${x}px - 24px)`;
+                chipBtn.style.top = `calc(50% + ${y}px - 24px)`;
+                chipBtn.innerText = chip.label;
+
+                if (idx === activeChipIndex) {
+                    chipBtn.classList.add('ring-4', 'ring-amber-400', 'scale-110');
+                }
+
+                chipBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    activeChipIndex = idx;
+                    updateTriggerChipUI();
+                    renderCircularChipSelector();
+                    closeChipSelector();
+                });
+
+                circularChipsHolder.appendChild(chipBtn);
+            });
+        }
+
+        function toggleChipSelector() {
+            if (chipSelectorOverlay.classList.contains('hidden-scale')) {
+                chipSelectorOverlay.classList.remove('hidden-scale');
+                chipSelectorOverlay.classList.add('active-scale');
+            } else {
+                closeChipSelector();
+            }
+        }
+
+        function closeChipSelector() {
+            chipSelectorOverlay.classList.remove('active-scale');
+            chipSelectorOverlay.classList.add('hidden-scale');
+        }
+
+        function updateTriggerChipUI() {
+            const chip = CHIP_VALUES[activeChipIndex];
+            triggerChipDisplay.className = `casino-chip w-14 h-14 ${chip.bg} ${chip.text} ${chip.border} text-xs border-2 relative z-10 shadow-xl`;
+            triggerChipDisplay.innerText = chip.label;
+        }
+
+        // --- BETTING SYSTEM ---
+        function placeBet(betKey) {
+            if (!isBettingOpen) return;
+
+            const chipVal = CHIP_VALUES[activeChipIndex].val;
+            if (balance < chipVal) {
+                showToast("잔액이 부족합니다.");
+                return;
+            }
+
+            balance -= chipVal;
+            currentBets[betKey] = (currentBets[betKey] || 0) + chipVal;
+            betHistory.push({ betKey, amount: chipVal });
+
+            updateBalanceUI();
+            renderChipsOnBoard();
+        }
+
+        function handleUndo() {
+            if (!isBettingOpen || betHistory.length === 0) return;
+            const lastBet = betHistory.pop();
+            currentBets[lastBet.betKey] -= lastBet.amount;
+            if (currentBets[lastBet.betKey] <= 0) {
+                delete currentBets[lastBet.betKey];
+            }
+            balance += lastBet.amount;
+            updateBalanceUI();
+            renderChipsOnBoard();
+        }
+
+        function handleDouble() {
+            if (!isBettingOpen) return;
+            let totalNeeded = 0;
+            Object.values(currentBets).forEach(amt => totalNeeded += amt);
+
+            if (totalNeeded === 0) return;
+            if (balance < totalNeeded) {
+                showToast("2배 베팅을 위한 잔액이 부족합니다.");
+                return;
+            }
+
+            balance -= totalNeeded;
+            Object.keys(currentBets).forEach(key => {
+                currentBets[key] *= 2;
+            });
+
+            updateBalanceUI();
+            renderChipsOnBoard();
+        }
+
+        function renderChipsOnBoard() {
+            // Clear existing chips
+            document.querySelectorAll('.chip-container').forEach(el => el.innerHTML = '');
+
+            Object.keys(currentBets).forEach(betKey => {
+                const amount = currentBets[betKey];
+                if (amount <= 0) return;
+
+                const spot = document.querySelector(`[data-bet="${betKey}"] .chip-container`);
+                if (spot) {
+                    const chipDiv = document.createElement('div');
+                    chipDiv.className = 'casino-chip w-8 h-8 bg-amber-500 text-slate-950 border border-white text-[9px] font-black shadow-lg animate-bounce';
+                    chipDiv.innerText = formatShortAmount(amount);
+                    spot.appendChild(chipDiv);
+                }
+            });
+        }
+
+        function updateBalanceUI() {
+            userBalanceEl.innerText = `₩ ${balance.toLocaleString()}`;
+            const totalBet = Object.values(currentBets).reduce((a, b) => a + b, 0);
+            totalBetEl.innerText = `₩ ${totalBet.toLocaleString()}`;
+
+            btnUndo.disabled = betHistory.length === 0 || !isBettingOpen;
+            btnDouble.disabled = totalBet === 0 || !isBettingOpen;
+        }
+
+        function formatShortAmount(amt) {
+            if (amt >= 1000000) return (amt / 1000000) + 'M';
+            if (amt >= 1000) return (amt / 1000) + 'K';
+            return amt;
+        }
+
+        // --- TIMING & ROUND LOGIC ---
+        function startNewRound() {
+            isBettingOpen = true;
+            timerSeconds = 12;
+            currentBets = {};
+            betHistory = [];
+            renderChipsOnBoard();
+            updateBalanceUI();
+
+            // Clear Hands UI
+            document.getElementById('player-cards').innerHTML = '';
+            document.getElementById('banker-cards').innerHTML = '';
+            document.getElementById('player-score').style.opacity = '0';
+            document.getElementById('banker-score').style.opacity = '0';
+
+            timerStatus.innerText = "베팅 가능";
+            timerStatus.className = "text-[9px] font-bold tracking-tighter text-slate-400 uppercase";
+
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                timerText.innerText = timerSeconds;
+                const dashOffset = 100 - (timerSeconds / 12) * 100;
+                timerProgress.setAttribute('stroke-dasharray', `${100 - dashOffset}, 100`);
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    lockBettingAndDeal();
+                }
+            }, 1000);
+        }
+
+        function lockBettingAndDeal() {
+            isBettingOpen = false;
+            closeChipSelector();
+            timerStatus.innerText = "베팅 마감";
+            timerStatus.className = "text-[9px] font-bold tracking-tighter text-red-400 uppercase";
+            updateBalanceUI();
+
+            // Play card deal animation after short delay
+            setTimeout(simulateDeal, 800);
+        }
+
+        // --- BACCARAT CARD DEAL SIMULATION ---
+        function simulateDeal() {
+            const deck = createDeck();
+            const playerHand = [drawCard(deck), drawCard(deck)];
+            const bankerHand = [drawCard(deck), drawCard(deck)];
+
+            // Render First Two Cards
+            renderCard('player-cards', playerHand[0], 0);
+            renderCard('banker-cards', bankerHand[0], 200);
+            renderCard('player-cards', playerHand[1], 400);
+            renderCard('banker-cards', bankerHand[1], 600);
+
+            setTimeout(() => {
+                let pScore = calculateScore(playerHand);
+                let bScore = calculateScore(bankerHand);
+
+                // Check 3rd card rules
+                let delay = 800;
+                if (pScore < 8 && bScore < 8) {
+                    // Player 3rd card
+                    if (pScore <= 5) {
+                        const p3 = drawCard(deck);
+                        playerHand.push(p3);
+                        renderCard('player-cards', p3, delay);
+                        delay += 600;
+                        pScore = calculateScore(playerHand);
+                    }
+                    // Banker 3rd card basic simplified logic
+                    if (bScore <= 5) {
+                        const b3 = drawCard(deck);
+                        bankerHand.push(b3);
+                        renderCard('banker-cards', b3, delay);
+                        delay += 600;
+                        bScore = calculateScore(bankerHand);
+                    }
+                }
+
+                setTimeout(() => {
+                    revealScoresAndSettle(playerHand, bankerHand);
+                }, delay + 400);
+
+            }, 800);
+        }
+
+        function createDeck() {
+            const suits = ['♠', '♥', '♦', '♣'];
+            const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+            let deck = [];
+            suits.forEach(s => values.forEach(v => deck.push({ suit: s, val: v })));
+            return deck.sort(() => Math.random() - 0.5);
+        }
+
+        function drawCard(deck) {
+            return deck.pop();
+        }
+
+        function getCardValue(val) {
+            if (['10', 'J', 'Q', 'K'].includes(val)) return 0;
+            if (val === 'A') return 1;
+            return parseInt(val);
+        }
+
+        function calculateScore(hand) {
+            let total = hand.reduce((sum, c) => sum + getCardValue(c.val), 0);
+            return total % 10;
+        }
+
+        function renderCard(containerId, card, delay) {
+            setTimeout(() => {
+                const container = document.getElementById(containerId);
+                const isRed = ['♥', '♦'].includes(card.suit);
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'w-10 h-14 bg-white rounded-md border border-slate-300 shadow-md flex flex-col justify-between p-1 font-bold text-xs animate-fade-in transform hover:scale-105 transition';
+                cardEl.style.color = isRed ? '#dc2626' : '#0f172a';
+                cardEl.innerHTML = `
+                    <div>${card.val}</div>
+                    <div class="text-right text-sm">${card.suit}</div>
+                `;
+                container.appendChild(cardEl);
+            }, delay);
+        }
+
+        function revealScoresAndSettle(playerHand, bankerHand) {
+            const pScore = calculateScore(playerHand);
+            const bScore = calculateScore(bankerHand);
+
+            const pScoreEl = document.getElementById('player-score');
+            const bScoreEl = document.getElementById('banker-score');
+
+            pScoreEl.innerText = pScore;
+            bScoreEl.innerText = bScore;
+            pScoreEl.style.opacity = '1';
+            bScoreEl.style.opacity = '1';
+
+            let winner = 'tie';
+            if (pScore > bScore) winner = 'player';
+            else if (bScore > pScore) winner = 'banker';
+
+            // Check Pairs
+            const isPPair = playerHand[0].val === playerHand[1].val;
+            const isBPair = bankerHand[0].val === bankerHand[1].val;
+
+            // Calculate Winnings
+            let totalWin = 0;
+            if (winner === 'player' && currentBets['player']) totalWin += currentBets['player'] * 2;
+            if (winner === 'banker' && currentBets['banker']) totalWin += currentBets['banker'] * 1.95;
+            if (winner === 'tie' && currentBets['tie']) totalWin += currentBets['tie'] * 9;
+            if (isPPair && currentBets['player_pair']) totalWin += currentBets['player_pair'] * 12;
+            if (isBPair && currentBets['banker_pair']) totalWin += currentBets['banker_pair'] * 12;
+            if ((isPPair || isBPair) && currentBets['either_pair']) totalWin += currentBets['either_pair'] * 6;
+
+            if (totalWin > 0) {
+                balance += totalWin;
+                showToast(`축하합니다! ₩ ${totalWin.toLocaleString()} 획득!`);
+            }
+
+            // Update Roadmap
+            addRoadmapEntry(winner, isPPair, isBPair);
+            updateBalanceUI();
+
+            // Next Round Timer
+            setTimeout(startNewRound, 4000);
+        }
+
+        // --- ROADMAP BEAD PLATE SYSTEM ---
+        function initSampleRoadmap() {
+            const outcomes = ['player', 'banker', 'banker', 'player', 'tie', 'banker', 'player', 'banker', 'banker', 'player'];
+            outcomes.forEach(w => addRoadmapEntry(w, false, false));
+        }
+
+        function addRoadmapEntry(winner, pPair, bPair) {
+            gameHistory.push({ winner, pPair, bPair });
+            renderRoadmap();
+        }
+
+        function renderRoadmap() {
+            const beadPlate = document.getElementById('bead-plate');
+            beadPlate.innerHTML = '';
+
+            let pCount = 0, bCount = 0, tCount = 0, ppCount = 0, bpCount = 0;
+
+            gameHistory.slice(-36).forEach(item => {
+                const cell = document.createElement('div');
+                cell.className = 'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-inner relative';
+
+                if (item.winner === 'player') {
+                    cell.classList.add('bg-blue-600');
+                    cell.innerText = 'P';
+                    pCount++;
+                } else if (item.winner === 'banker') {
+                    cell.classList.add('bg-red-600');
+                    cell.innerText = 'B';
+                    bCount++;
+                } else {
+                    cell.classList.add('bg-emerald-600');
+                    cell.innerText = 'T';
+                    tCount++;
+                }
+
+                if (item.pPair) {
+                    ppCount++;
+                    const dot = document.createElement('span');
+                    dot.className = 'absolute bottom-0 right-0 w-2 h-2 rounded-full bg-blue-400 border border-white';
+                    cell.appendChild(dot);
+                }
+                if (item.bPair) {
+                    bpCount++;
+                    const dot = document.createElement('span');
+                    dot.className = 'absolute top-0 left-0 w-2 h-2 rounded-full bg-red-400 border border-white';
+                    cell.appendChild(dot);
+                }
+
+                beadPlate.appendChild(cell);
+            });
+
+            // Update Stat counters
+            document.getElementById('stat-total').innerText = gameHistory.length;
+            document.getElementById('stat-player').innerText = pCount;
+            document.getElementById('stat-banker').innerText = bCount;
+            document.getElementById('stat-tie').innerText = tCount;
+            document.getElementById('stat-ppair').innerText = ppCount;
+            document.getElementById('stat-bpair').innerText = bpCount;
+        }
+
+        // --- UTILITY TOAST ---
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-16 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 font-black px-6 py-2.5 rounded-full shadow-2xl z-50 animate-bounce text-sm border-2 border-white';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    </script>
+</body>
+</html>
